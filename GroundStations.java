@@ -208,6 +208,7 @@ public class GroundStations
             //GroundStationDescription object into a JSON
             jsonStations.add(gson.toJson(groundStations.get(k)));
         }
+        executor.shutdown();
         
         //Convert each GroundStationDescription object into a JSON
         //and then append it to jsonStations
