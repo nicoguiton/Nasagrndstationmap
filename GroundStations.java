@@ -96,7 +96,6 @@ public class GroundStations
     {
         String flag = "http://icons.iconarchive.com/icons/famfamfam/flag/16/" +
                         stationCode.toLowerCase() + "-icon.png";
-        //String flag = "http://127.0.0.1:80/" + stationCode + ".gif";
         URL featureEditedURL = myMap.getFeatureFeedUrl();
         FeatureEntry stationMarker = new FeatureEntry();
         
@@ -129,6 +128,7 @@ public class GroundStations
     
     public List<String> retrieveGroundStations() throws Exception
     {
+    	//Initialize Nasa ssc object
         System.setProperty("http.agent", "WsExample (" + 
                            System.getProperty("os.name") + " " + 
                            System.getProperty("os.arch") + ")");
@@ -149,12 +149,11 @@ public class GroundStations
         //These stations are formated as Java objects
 	List<GroundStationDescription> groundStations = ssc.getAllGroundStations();
         
+        //Google json converter object
         Gson gson = new Gson();
         
-        //Create map
+        //Create map using a dummy Google account
         MapsService myService = new MapsService("Ground Station Locations");
-        
-        //This is a dummy Google account with no information attached to it
         myService.setUserCredentials("testproject106","intershiptestproject");
         MapEntry map = createMap(myService);
         
@@ -178,7 +177,6 @@ public class GroundStations
                 }
             });
         }
-            
         futurejsons = executor.invokeAll(googleMapRequests);
             
         for(int k = 0; k < groundStations.size(); k++)
@@ -187,7 +185,7 @@ public class GroundStations
             String stationjson = futurejsons.get(k).get();
             
             //Find the short name of the least specific address
-            //This should correspond to the ISO code of the station's country
+            //This corresponds to the ISO code of the station's country
             String targetsubstr = "short_name";
             int i = stationjson.lastIndexOf(targetsubstr);
             if(i != -1)
@@ -208,6 +206,7 @@ public class GroundStations
             //GroundStationDescription object into a JSON
             jsonStations.add(gson.toJson(groundStations.get(k)));
         }
+        //Exit and close threads used for sendGMapRequest()
         executor.shutdown();
         
         //Convert each GroundStationDescription object into a JSON
